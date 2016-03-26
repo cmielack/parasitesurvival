@@ -8,9 +8,13 @@ public class HostBehavior : MonoBehaviour
 
 	private List<Command> commandQueue;
 
+	public float health;
+
 	void Start () 
 	{
 		commandQueue = new List<Command> ();
+
+		health = 100.0f;
 		
 	}
 	
@@ -36,14 +40,18 @@ public class HostBehavior : MonoBehaviour
 			}
 
 		} else {
-			Idle ();
+			if (health < 20.0f) {
+				Shake ();
+			} else {
+				Idle ();
+			}
 		}
 	}
 
 	void ProcessInput(){
-		if (Input.GetKeyDown (KeyCode.Space)) {
+		/*if (Input.GetKeyDown (KeyCode.Space)) {
 			Shake ();
-		}
+		}*/
 	}
 
 	void Idle()
@@ -85,7 +93,7 @@ public class HostBehavior : MonoBehaviour
 		commandQueue.Add (new Command ("walk", startPosition - direction * distance, slowSpeed, 0));
 		commandQueue.Add (new Command ("walk", startPosition + direction * distance, fastSpeed, 0));
 
-		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 2));
+		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 1.3f));
 
 	}
 }
