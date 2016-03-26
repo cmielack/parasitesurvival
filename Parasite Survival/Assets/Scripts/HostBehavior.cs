@@ -134,9 +134,9 @@ public class HostBehavior : MonoBehaviour
 
 	void UpdateHealthBar()
 	{
-		int blobs = (int) Mathf.Ceil(health / 10.0f);
+		int blobs = (int) Mathf.Round(health / 10.0f);
 		for (int i = 0; i < healthBar.Length; i++) {
-			healthBar [i].GetComponent<MeshRenderer> ().enabled = i <= blobs;
+			healthBar [i].GetComponent<MeshRenderer> ().enabled = i < blobs;
 		}
 	}
 

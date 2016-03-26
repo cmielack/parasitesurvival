@@ -16,7 +16,7 @@ public class PlayerBehavior : MonoBehaviour {
 	Rigidbody rigidbody;
 
 	float health;
-	float healthSuckRate = 10f;
+	float healthSuckRate = 20f;
 	float healthDecayRate = 5f;
 	float healthGainRatio = 0.3f;
 
@@ -54,6 +54,10 @@ public class PlayerBehavior : MonoBehaviour {
 
 		UpdateHealth ();
 		UpdateHealthBar ();
+
+		if (Input.GetKey (KeyCode.Escape)) {
+			Application.LoadLevel (Application.loadedLevel);
+		}
 	}
 
 	void UpdateHealthBar()
@@ -110,11 +114,6 @@ public class PlayerBehavior : MonoBehaviour {
 	{
 		rigidbody.isKinematic = true;
 		GetComponent<AudioSource> ().PlayOneShot (landingSound);
-
-	}
-	void BackToWalkMode()
-	{
-		rigidbody.isKinematic = true;
 
 	}
 
@@ -176,6 +175,7 @@ public class PlayerBehavior : MonoBehaviour {
 	public void Die()
 	{
 		GetComponent<AudioSource> ().PlayOneShot (deathSound);
+		FindObjectOfType<CountdownManager> ().timerRun = false;
 		Invoke ("Kill", 1.0f);
 	}
 
