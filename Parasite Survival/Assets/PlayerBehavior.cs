@@ -15,11 +15,17 @@ public class PlayerBehavior : MonoBehaviour {
 
 	Rigidbody rigidbody;
 
+	float health;
+	float healthSuckRate = 5f;
+	float healthDecayRate = 1f;
+	float healthGainRatio = 0.2f;
+
 	// Use this for initialization
 	void Start () {
 		hostManager = FindObjectOfType<HostManager> ();
 		currentHost = null;
 		rigidbody = GetComponent<Rigidbody> ();
+		health = 20f;
 	}
 	
 	// Update is called once per frame
@@ -28,7 +34,8 @@ public class PlayerBehavior : MonoBehaviour {
 		ProcessGrabbing ();
 
 		AddLatchForce ();
-	
+
+		UpdateHealth ();
 	}
 
 
@@ -58,9 +65,11 @@ public class PlayerBehavior : MonoBehaviour {
 	{
 		currentHost = host;
 		rigidbody.isKinematic = false;
+		currentHost.isBeingLatched = true;
 	}
 
 	void Release(){
+		currentHost.isBeingLatched = false;
 		currentHost = null;
 		Invoke ("BackToWalkMode", 1);
 	}
@@ -90,11 +99,22 @@ public class PlayerBehavior : MonoBehaviour {
 	public void AddLatchForce()
 	{
 		if (currentHost != null) {
-			var diff = currentHost.transform.position - transform.position;
+			var diff = currentHost.transform.position + Vector3.up - transform.position;
 
 			var force = diff * forceConstant;
 
 			rigidbody.AddForce (force);
+		}
+	}
+
+	public void UpdateHealth()
+	{
+		if (currentHost != null) {
+			var healthSucked = Mathf.Min (Time.deltaTime * healthSuckRate, currentHost.health);
+			currentHost.health -= healthSucked;
+			health += healthSucked * healthGainRatio;
+		} else {
+			health -= healthDecayRate * Time.deltaTime;
 		}
 	}
 }

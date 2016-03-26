@@ -10,17 +10,33 @@ public class HostBehavior : MonoBehaviour
 
 	public float health;
 
+	public GameObject[] healthBar;
+
+	public bool isBeingLatched;
+
 	void Start () 
 	{
 		commandQueue = new List<Command> ();
 
 		health = 100.0f;
+
+		healthBar = new GameObject[10];
+		for (int i = 0; i < healthBar.Length; i++) {
+			healthBar [i] = GameObject.CreatePrimitive (PrimitiveType.Sphere);
+			healthBar [i].transform.SetParent (transform);
+			healthBar [i].transform.localPosition = new Vector3 (i * 0.1f - 0.5f, -0.10f, -0.8f);
+			healthBar [i].transform.localScale = Vector3.one * 0.1f;
+			healthBar [i].transform.GetComponent<MeshRenderer> ().material = Resources.Load ("Materials/HealthBar") as Material;
+		}
+
+		isBeingLatched = false;
 		
 	}
 	
 	void Update () 
 	{
 		ProcessInput ();
+		UpdateHealthBar ();
 		if (commandQueue.Count > 0) {
 			var currentCommand = commandQueue [0];
 
@@ -40,7 +56,7 @@ public class HostBehavior : MonoBehaviour
 			}
 
 		} else {
-			if (health < 20.0f) {
+			if (health < 50.0f && isBeingLatched) {
 				Shake ();
 			} else {
 				Idle ();
@@ -56,7 +72,7 @@ public class HostBehavior : MonoBehaviour
 
 	void Idle()
 	{
-		commandQueue.Add (new Command ("walk", new Vector3 (Random.Range (-8.5f, 8.5f), 0, Random.Range (-4.0f, 4.0f)),
+		commandQueue.Add (new Command ("walk", new Vector3 (Random.Range (-7.5f, 7.5f), 0, Random.Range (-4.0f, 4.0f)),
 			walkSpeed, 0));
 		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 1.0f));
 	}
@@ -95,6 +111,14 @@ public class HostBehavior : MonoBehaviour
 
 		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 1.3f));
 
+	}
+
+	void UpdateHealthBar()
+	{
+		int blobs = (int) Mathf.Ceil(health / 10.0f);
+		for (int i = 0; i < healthBar.Length; i++) {
+			healthBar [i].GetComponent<MeshRenderer> ().enabled = i <= blobs;
+		}
 	}
 }
 
