@@ -17,15 +17,32 @@ public class PlayerBehavior : MonoBehaviour {
 
 	float health;
 	float healthSuckRate = 10f;
-	float healthDecayRate = 1f;
-	float healthGainRatio = 0.2f;
+	float healthDecayRate = 5f;
+	float healthGainRatio = 0.3f;
+
+	public AudioClip landingSound;
+	public AudioClip grabbingSound;
+	public AudioClip deathSound;
+
+	public GameObject[] healthBar;
+
 
 	// Use this for initialization
 	void Start () {
 		hostManager = FindObjectOfType<HostManager> ();
 		currentHost = null;
 		rigidbody = GetComponent<Rigidbody> ();
-		health = 20f;
+		health = 100f;
+
+		healthBar = new GameObject[10];
+		for (int i = 0; i < healthBar.Length; i++) {
+			healthBar [i] = GameObject.CreatePrimitive (PrimitiveType.Sphere);
+			healthBar [i].transform.SetParent (transform);
+			healthBar [i].transform.localPosition = new Vector3 (i * 0.1f - 0.5f, -0.10f, -0.8f);
+			healthBar [i].transform.localScale = Vector3.one * 0.1f;
+			healthBar [i].transform.GetComponent<MeshRenderer> ().material = Resources.Load ("Materials/HealthBarPlayer") as Material;
+		}
+
 	}
 	
 	// Update is called once per frame
@@ -36,8 +53,16 @@ public class PlayerBehavior : MonoBehaviour {
 		AddLatchForce ();
 
 		UpdateHealth ();
+		UpdateHealthBar ();
 	}
 
+	void UpdateHealthBar()
+	{
+		int blobs = (int) Mathf.Ceil(health / 10.0f);
+		for (int i = 0; i < healthBar.Length; i++) {
+			healthBar [i].GetComponent<MeshRenderer> ().enabled = i <= blobs;
+		}
+	}
 
 	void ProcessAxisInput(){
 		var inputVector = new Vector3 (Input.GetAxis ("Horizontal"), 0, Input.GetAxis ("Vertical"));
@@ -66,6 +91,8 @@ public class PlayerBehavior : MonoBehaviour {
 		currentHost = host;
 		rigidbody.isKinematic = false;
 		currentHost.isBeingLatched = true;
+
+		GetComponent<AudioSource> ().PlayOneShot (grabbingSound);
 	}
 
 	void Release(){
@@ -75,10 +102,16 @@ public class PlayerBehavior : MonoBehaviour {
 
 	void OnCollisionEnter(Collision col){
 		if (col.other.GetComponent<HostBehavior> () == null) {
-			rigidbody.isKinematic = true;
+			Land ();
 		}
 	}
 
+	void Land()
+	{
+		rigidbody.isKinematic = true;
+		GetComponent<AudioSource> ().PlayOneShot (landingSound);
+
+	}
 	void BackToWalkMode()
 	{
 		rigidbody.isKinematic = true;
@@ -122,8 +155,21 @@ public class PlayerBehavior : MonoBehaviour {
 			var healthSucked = Mathf.Min (Time.deltaTime * healthSuckRate, currentHost.health);
 			currentHost.health -= healthSucked;
 			health += healthSucked * healthGainRatio;
+
+			if (health > 100f)
+				health = 100f;
 		} else {
 			health -= healthDecayRate * Time.deltaTime;
 		}
+
+		if (health <= 0) {
+			Die ();
+		}
+	}
+
+
+	public void Die()
+	{
+		GetComponent<AudioSource> ().PlayOneShot (deathSound);
 	}
 }

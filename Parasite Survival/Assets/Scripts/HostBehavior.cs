@@ -99,21 +99,21 @@ public class HostBehavior : MonoBehaviour
 		float angle = Random.Range (0f, Mathf.PI);
 		Vector3 direction = new Vector3 (Mathf.Cos (angle), 0, Mathf.Sin (angle));
 		float distance = 1f;
-		float slowSpeed = 1.0f;
-		float fastSpeed = 50.0f;
+		float slowSpeed = 10.0f;
+		float fastSpeed = 10.0f;
 
 		Vector3 startPosition = transform.position;
 
 		commandQueue.Clear ();
 
 		commandQueue.Add (new Command ("walk", startPosition - direction * distance, slowSpeed, 0));
+		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 0.1f));
 		commandQueue.Add (new Command ("walk", startPosition + direction * distance, fastSpeed, 0));
+		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 0.1f));
 		commandQueue.Add (new Command ("walk", startPosition - direction * distance, slowSpeed, 0));
+		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 0.1f));
 		commandQueue.Add (new Command ("walk", startPosition + direction * distance, fastSpeed, 0));
-		commandQueue.Add (new Command ("walk", startPosition - direction * distance, slowSpeed, 0));
-		commandQueue.Add (new Command ("walk", startPosition + direction * distance, fastSpeed, 0));
-
-		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 3.0f));
+		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 1.5f));
 
 	}
 
