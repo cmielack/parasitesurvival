@@ -15,7 +15,6 @@ public class HostManager : MonoBehaviour
 	public void UpdateHosts()
 	{
 		hosts = FindObjectsOfType<HostBehavior> ();
-
 	}
 
 }
