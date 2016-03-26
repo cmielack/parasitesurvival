@@ -58,7 +58,7 @@ public class PlayerBehavior : MonoBehaviour {
 
 	void UpdateHealthBar()
 	{
-		int blobs = (int) Mathf.Ceil(health / 10.0f);
+		int blobs = (int) Mathf.Round(health / 10.0f);
 		for (int i = 0; i < healthBar.Length; i++) {
 			healthBar [i].GetComponent<MeshRenderer> ().enabled = i <= blobs;
 		}
@@ -123,6 +123,10 @@ public class PlayerBehavior : MonoBehaviour {
 		HostBehavior closest = null;
 
 		foreach (HostBehavior host in hostManager.hosts) {
+			if (host == null) {
+				hostManager.UpdateHosts ();
+				continue;
+			}
 			var diff = host.transform.position - transform.position;
 			if (diff.magnitude < closestDistance) {
 				closest = host;
@@ -163,6 +167,7 @@ public class PlayerBehavior : MonoBehaviour {
 		}
 
 		if (health <= 0) {
+			health = 0;
 			Die ();
 		}
 	}
@@ -171,5 +176,10 @@ public class PlayerBehavior : MonoBehaviour {
 	public void Die()
 	{
 		GetComponent<AudioSource> ().PlayOneShot (deathSound);
+		Invoke ("Kill", 1.0f);
+	}
+
+	void Kill(){
+		Destroy (gameObject);
 	}
 }

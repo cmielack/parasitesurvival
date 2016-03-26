@@ -8,7 +8,14 @@ public class HostManager : MonoBehaviour
 
 	void Start () 
 	{
+		UpdateHosts ();
+	}
+
+
+	public void UpdateHosts()
+	{
 		hosts = FindObjectsOfType<HostBehavior> ();
+
 	}
 
 }

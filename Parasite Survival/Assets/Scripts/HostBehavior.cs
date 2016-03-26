@@ -99,8 +99,8 @@ public class HostBehavior : MonoBehaviour
 		float angle = Random.Range (0f, Mathf.PI);
 		Vector3 direction = new Vector3 (Mathf.Cos (angle), 0, Mathf.Sin (angle));
 		float distance = 1f;
-		float slowSpeed = 10.0f;
-		float fastSpeed = 10.0f;
+		float slowSpeed = 7.0f;
+		float fastSpeed = 7.0f;
 
 		Vector3 startPosition = transform.position;
 
@@ -119,12 +119,16 @@ public class HostBehavior : MonoBehaviour
 
 	void UpdateHealth()
 	{
-		if (!isBeingLatched && health != 100.0f) {
+		if (!isBeingLatched && health < 100.0f) {
 			health += Time.deltaTime * healthRegenRate;
 		}
 
 		if (health > 100.0f) {
 			health = 100.0f;
+		}
+
+		if (health <= 0) {
+			Invoke ("Die", 1.0f);
 		}
 	}
 
@@ -134,6 +138,11 @@ public class HostBehavior : MonoBehaviour
 		for (int i = 0; i < healthBar.Length; i++) {
 			healthBar [i].GetComponent<MeshRenderer> ().enabled = i <= blobs;
 		}
+	}
+
+
+	void Die(){
+		Destroy (gameObject);
 	}
 }
 
