@@ -112,6 +112,10 @@ public class PlayerBehavior : MonoBehaviour {
 		rigidbody.isKinematic = true;
 		GetComponent<AudioSource> ().PlayOneShot (landingSound);
 
+		var pos = transform.position;
+		pos.y = 0;
+		transform.position = pos;
+
 	}
 
 	HostBehavior GetNearestHost(){
