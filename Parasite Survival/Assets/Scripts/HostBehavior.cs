@@ -41,6 +41,9 @@ public class HostBehavior : MonoBehaviour
 	}
 
 	void ProcessInput(){
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			Shake ();
+		}
 	}
 
 	void Idle()
@@ -63,7 +66,28 @@ public class HostBehavior : MonoBehaviour
 		}
 	}
 
-		//currentGoal = 
+	void Shake()
+	{
+		float angle = Random.Range (0f, Mathf.PI);
+		Vector3 direction = new Vector3 (Mathf.Cos (angle), 0, Mathf.Sin (angle));
+		float distance = 1f;
+		float slowSpeed = 2.0f;
+		float fastSpeed = 25.0f;
+
+		Vector3 startPosition = transform.position;
+
+		commandQueue.Clear ();
+
+		commandQueue.Add (new Command ("walk", startPosition - direction * distance, slowSpeed, 0));
+		commandQueue.Add (new Command ("walk", startPosition + direction * distance, fastSpeed, 0));
+		commandQueue.Add (new Command ("walk", startPosition - direction * distance, slowSpeed, 0));
+		commandQueue.Add (new Command ("walk", startPosition + direction * distance, fastSpeed, 0));
+		commandQueue.Add (new Command ("walk", startPosition - direction * distance, slowSpeed, 0));
+		commandQueue.Add (new Command ("walk", startPosition + direction * distance, fastSpeed, 0));
+
+		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 2));
+
+	}
 }
 
 
