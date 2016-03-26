@@ -16,7 +16,13 @@ public class CountdownManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (timerRun)
-			theTime = Mathf.Round (Time.realtimeSinceStartup);
+			theTime = Mathf.Round (Time.timeSinceLevelLoad);
 		text.GetComponent<UnityEngine.UI.Text> ().text = theTime.ToString();
+
+
+		if (Input.GetKey (KeyCode.Escape)) {
+			Application.LoadLevel (Application.loadedLevel);
+		}
+
 	}
 }

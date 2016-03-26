@@ -16,6 +16,9 @@ public class HostBehavior : MonoBehaviour
 
 	public bool isBeingLatched;
 
+
+	public AudioClip shakeSound;
+
 	void Start () 
 	{
 		commandQueue = new List<Command> ();
@@ -44,7 +47,9 @@ public class HostBehavior : MonoBehaviour
 		if (commandQueue.Count > 0) {
 			var currentCommand = commandQueue [0];
 
-			currentCommand.Activate ();
+			if (currentCommand.Activate () && currentCommand.type == "walk" && currentCommand.speed > 5) {
+				GetComponent<AudioSource> ().PlayOneShot (shakeSound);
+			}
 
 			if (currentCommand.type == "walk") {
 				GoTo (currentCommand);
@@ -177,10 +182,12 @@ public class Command
 		goal = theGoal;
 	}
 
-	public void Activate(){
+	public bool Activate(){
 		if (!isActivated) {
 			startTime = Time.realtimeSinceStartup;
 			isActivated = true;
+			return true;
 		}
+		return false;
 	}
 }

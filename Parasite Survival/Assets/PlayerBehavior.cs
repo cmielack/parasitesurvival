@@ -55,9 +55,6 @@ public class PlayerBehavior : MonoBehaviour {
 		UpdateHealth ();
 		UpdateHealthBar ();
 
-		if (Input.GetKey (KeyCode.Escape)) {
-			Application.LoadLevel (Application.loadedLevel);
-		}
 	}
 
 	void UpdateHealthBar()
