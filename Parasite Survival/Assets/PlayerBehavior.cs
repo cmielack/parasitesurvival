@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PlayerBehavior : MonoBehaviour {
 
-	float baseSpeed = 2f;
+	float baseSpeed = 0.5f;
 
 	float latchRange = 2f;
 
@@ -16,7 +16,7 @@ public class PlayerBehavior : MonoBehaviour {
 	Rigidbody rigidbody;
 
 	float health;
-	float healthSuckRate = 5f;
+	float healthSuckRate = 10f;
 	float healthDecayRate = 1f;
 	float healthGainRatio = 0.2f;
 
@@ -71,7 +71,12 @@ public class PlayerBehavior : MonoBehaviour {
 	void Release(){
 		currentHost.isBeingLatched = false;
 		currentHost = null;
-		Invoke ("BackToWalkMode", 1);
+	}
+
+	void OnCollisionEnter(Collision col){
+		if (col.other.GetComponent<HostBehavior> () == null) {
+			rigidbody.isKinematic = true;
+		}
 	}
 
 	void BackToWalkMode()
@@ -99,11 +104,15 @@ public class PlayerBehavior : MonoBehaviour {
 	public void AddLatchForce()
 	{
 		if (currentHost != null) {
-			var diff = currentHost.transform.position + Vector3.up - transform.position;
+			var diff = currentHost.transform.position + Vector3.up*1.5f - transform.position;
 
 			var force = diff * forceConstant;
 
 			rigidbody.AddForce (force);
+
+			if (currentHost.health > currentHost.startShakingHealth) {
+				rigidbody.velocity *= 0.8f;
+			}
 		}
 	}
 

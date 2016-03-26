@@ -9,6 +9,8 @@ public class HostBehavior : MonoBehaviour
 	private List<Command> commandQueue;
 
 	public float health;
+	public float startShakingHealth;
+	public float healthRegenRate = 1.0f;
 
 	public GameObject[] healthBar;
 
@@ -19,6 +21,7 @@ public class HostBehavior : MonoBehaviour
 		commandQueue = new List<Command> ();
 
 		health = 100.0f;
+		startShakingHealth = 50.0f;
 
 		healthBar = new GameObject[10];
 		for (int i = 0; i < healthBar.Length; i++) {
@@ -36,6 +39,7 @@ public class HostBehavior : MonoBehaviour
 	void Update () 
 	{
 		ProcessInput ();
+		UpdateHealth ();
 		UpdateHealthBar ();
 		if (commandQueue.Count > 0) {
 			var currentCommand = commandQueue [0];
@@ -56,7 +60,7 @@ public class HostBehavior : MonoBehaviour
 			}
 
 		} else {
-			if (health < 50.0f && isBeingLatched) {
+			if (health < startShakingHealth && isBeingLatched) {
 				Shake ();
 			} else {
 				Idle ();
@@ -95,8 +99,8 @@ public class HostBehavior : MonoBehaviour
 		float angle = Random.Range (0f, Mathf.PI);
 		Vector3 direction = new Vector3 (Mathf.Cos (angle), 0, Mathf.Sin (angle));
 		float distance = 1f;
-		float slowSpeed = 2.0f;
-		float fastSpeed = 25.0f;
+		float slowSpeed = 1.0f;
+		float fastSpeed = 50.0f;
 
 		Vector3 startPosition = transform.position;
 
@@ -109,8 +113,19 @@ public class HostBehavior : MonoBehaviour
 		commandQueue.Add (new Command ("walk", startPosition - direction * distance, slowSpeed, 0));
 		commandQueue.Add (new Command ("walk", startPosition + direction * distance, fastSpeed, 0));
 
-		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 1.3f));
+		commandQueue.Add (new Command ("wait", Vector3.zero, 0, 3.0f));
 
+	}
+
+	void UpdateHealth()
+	{
+		if (!isBeingLatched && health != 100.0f) {
+			health += Time.deltaTime * healthRegenRate;
+		}
+
+		if (health > 100.0f) {
+			health = 100.0f;
+		}
 	}
 
 	void UpdateHealthBar()
