@@ -10,19 +10,35 @@ public class HostBehavior : MonoBehaviour
 
 	private float arrivedTolerance = 0.01f;
 
+	private Vector3 currentGoal;
+
 	void Start () 
 	{
 		mode = ActionMode.Rest;
+		currentGoal = Vector3.zero;
 	}
 	
 	void Update () 
 	{
-		if (Input.GetKey (KeyCode.Space)) {
-			mode = ActionMode.Walk;
-			GoTo (new Vector3 (-6,0,3));
+		ProcessInput ();
+
+		if (mode == ActionMode.Walk) {
+			GoTo (currentGoal);
 		}
-		else{
-			mode = ActionMode.Rest;
+		else if (mode == ActionMode.Rest){
+			//...
+		}
+	}
+
+	void ProcessInput(){
+		if (mode == ActionMode.Rest) {
+			PickRandomGoal ();
+			if(Input.GetKey(KeyCode.Space)){
+				mode = ActionMode.Walk;
+			}
+
+		} else if (mode == ActionMode.Walk) {
+
 		}
 	}
 
@@ -43,6 +59,12 @@ public class HostBehavior : MonoBehaviour
 			Arrive ();
 		}
 	}
+
+	void PickRandomGoal ()
+	{
+		currentGoal = new Vector3 (Random.Range (-8.5f, 8.5f), 0, Random.Range (-4.5f, 4.5f));
+	}
+
 
 	void Arrive()
 	{
