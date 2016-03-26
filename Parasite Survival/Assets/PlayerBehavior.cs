@@ -7,20 +7,28 @@ public class PlayerBehavior : MonoBehaviour {
 
 	float latchRange = 2f;
 
+	float forceConstant = 100f;
+
 	HostManager hostManager;
 
 	HostBehavior currentHost;
+
+	Rigidbody rigidbody;
 
 	// Use this for initialization
 	void Start () {
 		hostManager = FindObjectOfType<HostManager> ();
 		currentHost = null;
+		rigidbody = GetComponent<Rigidbody> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		ProcessAxisInput ();	
 		ProcessGrabbing ();
+
+		AddLatchForce ();
+	
 	}
 
 
@@ -41,7 +49,7 @@ public class PlayerBehavior : MonoBehaviour {
 			Debug.DrawLine (transform.position, currentHost.transform.position);
 
 			if (!Input.GetButton ("Fire1")) {
-				currentHost = null;
+				Release ();
 			}
 		}
 	}
@@ -49,6 +57,17 @@ public class PlayerBehavior : MonoBehaviour {
 	void LatchOnTo(HostBehavior host)
 	{
 		currentHost = host;
+		rigidbody.isKinematic = false;
+	}
+
+	void Release(){
+		currentHost = null;
+		Invoke ("BackToWalkMode", 1);
+	}
+
+	void BackToWalkMode()
+	{
+		rigidbody.isKinematic = true;
 
 	}
 
@@ -65,5 +84,17 @@ public class PlayerBehavior : MonoBehaviour {
 		}
 
 		return closest;
+	}
+
+
+	public void AddLatchForce()
+	{
+		if (currentHost != null) {
+			var diff = currentHost.transform.position - transform.position;
+
+			var force = diff * forceConstant;
+
+			rigidbody.AddForce (force);
+		}
 	}
 }
